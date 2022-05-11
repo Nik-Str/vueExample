@@ -7,6 +7,7 @@
       <router-view />
       <CartOffcanvas />
       <FilterOffcanvas />
+      <ProductModal />
     </body>
     <footer>
       <Footer />
@@ -19,6 +20,7 @@ import Navbar from './components/Navbar.vue';
 import Footer from './components/Footer.vue';
 import CartOffcanvas from './components/CartOffcanvas.vue';
 import FilterOffcanvas from './components/FilterOffcanvas.vue';
+import ProductModal from './components/ProductModal.vue';
 
 export default {
   name: 'App',
@@ -27,6 +29,7 @@ export default {
     CartOffcanvas,
     Footer,
     FilterOffcanvas,
+    ProductModal,
   },
 };
 </script>

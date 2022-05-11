@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router';
 import HomeView from '../views/HomeView.vue';
 import MaleView from '../views/MaleView.vue';
 import FemaleView from '../views/FemaleView.vue';
+import Favourites from '../views/Favourites.vue';
 
 const routes = [
   {
@@ -18,6 +19,11 @@ const routes = [
     path: '/female',
     name: 'female',
     component: FemaleView,
+  },
+  {
+    path: '/favourites',
+    name: 'favourites',
+    component: Favourites,
   },
 ];
 
