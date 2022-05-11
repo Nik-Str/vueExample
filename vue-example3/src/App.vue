@@ -31,6 +31,9 @@ export default {
     FilterOffcanvas,
     ProductModal,
   },
+  mounted() {
+    this.$store.dispatch('getFavourites');
+  },
 };
 </script>
 

@@ -7,7 +7,7 @@
             :src="`${$store.state.base_url}/image/${item.image_one}`"
             class="card-img-top"
             alt="product"
-            @click="$store.commit('setModal', item.id)"
+            @click="$store.commit('setModal', item)"
             data-bs-toggle="modal"
             data-bs-target="#productModal"
           />

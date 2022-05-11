@@ -1,6 +1,5 @@
-import { createStore, storeKey } from 'vuex';
+import { createStore } from 'vuex';
 const BASE_URL = 'http://localhost:3000';
-import { toRaw } from 'vue';
 
 export default createStore({
   state() {
@@ -61,8 +60,7 @@ export default createStore({
       state.isError = payload;
     },
     setModal(state, payload) {
-      const product = state.data.filter((item) => item.id === payload);
-      state.modal = product[0];
+      state.modal = payload;
     },
     setSelectedSize(state, payload) {
       state.modalSelectedSize = payload;
@@ -114,15 +112,20 @@ export default createStore({
         state.selectedColor = [...state.selectedColor, payload];
       }
     },
+    setInitialFavourites(state, payload) {
+      state.favourites = payload;
+    },
     addToFavourites(state, payload) {
-      if (state.favourites.some((item) => item.id === payload.id)) {
-        state.favourites = state.favourites.filter((item) => item.id !== payload.id);
+      if (state.favourites.some((item) => item.article_nr === payload.article_nr)) {
+        state.favourites = state.favourites.filter((item) => item.article_nr !== payload.article_nr);
       } else {
         state.favourites = [...state.favourites, payload];
       }
+      localStorage.setItem('favourites', JSON.stringify(state.favourites.map((item) => item.article_nr)));
     },
     removeAllFromFavourites(state) {
       state.favourites = [];
+      localStorage.clear('favourites');
     },
   },
   actions: {
@@ -134,6 +137,18 @@ export default createStore({
         .then((res) => res.json())
         .then((res) => state.commit('setData', res))
         .catch((err) => state.commit('setError', err.message));
+    },
+    getFavourites(state) {
+      const storage = JSON.parse(localStorage.getItem('favourites'));
+      if (storage) {
+        fetch(`${BASE_URL}/products`, {
+          method: 'POST',
+          body: JSON.stringify({ products: storage }),
+        })
+          .then((res) => res.json())
+          .then((res) => state.commit('setInitialFavourites', res))
+          .catch((err) => state.commit('setError', err.message));
+      }
     },
   },
   getters: {
