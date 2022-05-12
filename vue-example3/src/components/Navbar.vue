@@ -31,7 +31,9 @@
             </router-link>
           </li>
           <li class="nav-item nav-link" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight">
-            <i class="bi bi-bag"></i> <span :style="{ fontSize: '0.8rem' }">0</span>
+            <i v-if="$store.state.cart.length === 0" class="bi bi-bag"></i>
+            <i v-if="$store.state.cart.length >= 1" class="bi bi-bag-fill"></i>
+            <span :style="{ fontSize: '0.8rem' }">{{ getCartAmount }}</span>
           </li>
         </ul>
       </div>
@@ -40,7 +42,12 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex';
+
 export default {
   name: 'Navbar',
+  computed: {
+    ...mapGetters(['getCartAmount']),
+  },
 };
 </script>

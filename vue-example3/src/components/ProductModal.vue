@@ -1,5 +1,5 @@
 <template>
-  <div class="modal fade" data-bs-backdrop="static" id="productModal" tabindex="-1" aria-hidden="true">
+  <div class="modal fade" id="productModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered">
       <div class="modal-content">
         <div class="modal-header border-0 pb-0 pb-lg-3">
@@ -24,7 +24,17 @@
           </div>
         </div>
         <div class="modal-footer d-flex justify-content-center border-0">
-          <button type="button" class="btn btn-dark" :style="{ minWidth: '30vw' }">Add to cart</button>
+          <button
+            type="button"
+            class="btn btn-dark"
+            :style="{ minWidth: '30vw' }"
+            @click="$store.commit('addToCart')"
+            :disabled="$store.state.modalSelectedSize !== 'null' ? false : true"
+            data-bs-toggle="offcanvas"
+            data-bs-target="#offcanvasRight"
+          >
+            Add to cart
+          </button>
         </div>
       </div>
     </div>

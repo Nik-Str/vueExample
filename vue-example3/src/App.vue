@@ -33,6 +33,7 @@ export default {
   },
   mounted() {
     this.$store.dispatch('getFavourites');
+    this.$store.dispatch('getCart');
   },
 };
 </script>
@@ -43,5 +44,20 @@ export default {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   color: #2c3e50;
+}
+
+.modal {
+  z-index: 1045 !important;
+}
+.modal-backdrop {
+  z-index: 1044 !important;
+}
+
+.offcanvas {
+  z-index: 1050 !important;
+}
+
+.offcanvas-backdrop {
+  z-index: 1049 !important;
 }
 </style>

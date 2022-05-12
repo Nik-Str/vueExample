@@ -16,12 +16,12 @@ export default createStore({
       allBrands: [],
       allSizes: ['s', 'm', 'l', 'xl'],
       base_url: process.env.VUE_APP_BASE_URL,
-      selectedSort: '',
       selectedCategory: [],
       selectedBrand: [],
       selectedSize: [],
       selectedColor: [],
       favourites: [],
+      cart: [],
     };
   },
   mutations: {
@@ -82,7 +82,6 @@ export default createStore({
         default:
           break;
       }
-      state.selectedSort = payload;
     },
     filterBySize(state, payload) {
       if (state.selectedSize.some((item) => item === payload)) {
@@ -125,7 +124,80 @@ export default createStore({
     },
     removeAllFromFavourites(state) {
       state.favourites = [];
-      localStorage.clear('favourites');
+      localStorage.removeItem('favourites');
+    },
+    addToCart(state) {
+      if (
+        state.cart.some(
+          (item) => item.article_nr === state.modal.article_nr && item.selectedSize === state.modalSelectedSize
+        )
+      ) {
+        state.cart = state.cart.map((item) => {
+          if (item.article_nr === state.modal.article_nr && item.selectedSize === state.modalSelectedSize) {
+            return { ...item, total: item.total + state.modal.price, amount: item.amount + 1 };
+          } else {
+            return item;
+          }
+        });
+      } else {
+        state.cart = [
+          ...state.cart,
+          { ...state.modal, total: state.modal.price, amount: 1, selectedSize: state.modalSelectedSize },
+        ];
+      }
+      localStorage.setItem(
+        'cart',
+        JSON.stringify(
+          state.cart.map((item) => {
+            return { article: item.article_nr, amount: item.amount, size: item.selectedSize };
+          })
+        )
+      );
+    },
+    incrementItemInCart(state, payload) {
+      state.cart = state.cart.map((item) => {
+        if (item === payload) {
+          return { ...item, total: item.total + item.price, amount: item.amount + 1 };
+        } else {
+          return item;
+        }
+      });
+      localStorage.setItem(
+        'cart',
+        JSON.stringify(
+          state.cart.map((item) => {
+            return { article: item.article_nr, amount: item.amount, size: item.selectedSize };
+          })
+        )
+      );
+    },
+    decrementItemInCart(state, payload) {
+      if (payload.amount > 1) {
+        state.cart = state.cart.map((item) => {
+          if (item === payload) {
+            return { ...item, total: item.total - item.price, amount: item.amount - 1 };
+          } else {
+            return item;
+          }
+        });
+      } else {
+        state.cart = state.cart.filter((item) => item !== payload);
+      }
+      if (state.cart.length >= 1) {
+        localStorage.setItem(
+          'cart',
+          JSON.stringify(
+            state.cart.map((item) => {
+              return { article: item.article_nr, amount: item.amount, size: item.selectedSize };
+            })
+          )
+        );
+      } else {
+        localStorage.removeItem('cart');
+      }
+    },
+    setInitialCart(state, payload) {
+      state.cart = payload;
     },
   },
   actions: {
@@ -147,6 +219,31 @@ export default createStore({
         })
           .then((res) => res.json())
           .then((res) => state.commit('setInitialFavourites', res))
+          .catch((err) => state.commit('setError', err.message));
+      }
+    },
+    getCart(state) {
+      const storage = JSON.parse(localStorage.getItem('cart'));
+      if (storage) {
+        const articles = storage.map((item) => item.article);
+        fetch(`${BASE_URL}/products`, {
+          method: 'POST',
+          body: JSON.stringify({ products: articles }),
+        })
+          .then((res) => res.json())
+          .then((res) => {
+            let cart = [];
+            for (let i = 0; i < storage.length; i++) {
+              const item = res.filter((item) => item.article_nr === storage[i].article);
+              cart.push({
+                ...item[0],
+                amount: storage[i].amount,
+                selectedSize: storage[i].size,
+                total: storage[i].amount * item[0].price,
+              });
+            }
+            state.commit('setInitialCart', cart);
+          })
           .catch((err) => state.commit('setError', err.message));
       }
     },
@@ -188,6 +285,20 @@ export default createStore({
       }
 
       return items;
+    },
+    getCartAmount(state) {
+      let amount = 0;
+      for (let i = 0; i < state.cart.length; i++) {
+        amount = amount + state.cart[i].amount;
+      }
+      return amount;
+    },
+    getCartTotal(state) {
+      let total = 0;
+      for (let i = 0; i < state.cart.length; i++) {
+        total = total + state.cart[i].total;
+      }
+      return total;
     },
   },
 });

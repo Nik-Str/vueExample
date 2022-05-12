@@ -11,10 +11,10 @@
       @input="(e) => $store.commit('setSelectedSize', e.target.value)"
     >
       <option selected value="null">Choose Size</option>
-      <option v-if="product.s" value="Small">S</option>
-      <option v-if="product.m" value="Medium">M</option>
-      <option v-if="product.l" value="Large">L</option>
-      <option v-if="product.xl" value="X-Large">XL</option>
+      <option v-if="product.s" value="s">S</option>
+      <option v-if="product.m" value="m">M</option>
+      <option v-if="product.l" value="l">L</option>
+      <option v-if="product.xl" value="xl">XL</option>
     </select>
     <p><span class="fw-bold mb-3">Description</span><br />{{ product.description }}</p>
     <p class="m-0"><span class="fw-bold">Specification</span><br /></p>
