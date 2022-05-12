@@ -2,7 +2,7 @@
   <div class="home">
     <div class="videoContainer">
       <video autoplay muted loop class="myVideo">
-        <source src="../assets/home.mp4" type="video/mp4" />
+        <source :src="`${$store.state.base_url}/homevideo`" type="video/mp4" />
         Your browser does not support HTML5 video.
       </video>
     </div>
