@@ -3,6 +3,7 @@ import HomeView from '../views/HomeView.vue';
 import MaleView from '../views/MaleView.vue';
 import FemaleView from '../views/FemaleView.vue';
 import Favourites from '../views/Favourites.vue';
+import SupportView from '../views/SupportView.vue';
 
 const routes = [
   {
@@ -24,6 +25,11 @@ const routes = [
     path: '/favourites',
     name: 'favourites',
     component: Favourites,
+  },
+  {
+    path: '/support',
+    name: 'support',
+    component: SupportView,
   },
 ];
 

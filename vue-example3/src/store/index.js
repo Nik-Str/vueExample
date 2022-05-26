@@ -22,6 +22,14 @@ export default createStore({
       selectedColor: [],
       favourites: [],
       cart: [],
+      displaySupport: false,
+      webSocket: null,
+      supportChat: [],
+      supportTicketId: null,
+      supportId: null,
+      supportList: [],
+      isLoadingSupportUpdate: false,
+      clientHasNewMsg: false,
     };
   },
   mutations: {
@@ -120,7 +128,11 @@ export default createStore({
       } else {
         state.favourites = [...state.favourites, payload];
       }
-      localStorage.setItem('favourites', JSON.stringify(state.favourites.map((item) => item.article_nr)));
+      if (state.favourites.length >= 1) {
+        localStorage.setItem('favourites', JSON.stringify(state.favourites.map((item) => item.article_nr)));
+      } else {
+        localStorage.removeItem('favourites');
+      }
     },
     removeAllFromFavourites(state) {
       state.favourites = [];
@@ -199,6 +211,64 @@ export default createStore({
     setInitialCart(state, payload) {
       state.cart = payload;
     },
+    setDisplaySupport(state) {
+      state.displaySupport = !state.displaySupport;
+    },
+    initSupportChat(state, payload) {
+      if (!state.webSocket) {
+        state.webSocket = new WebSocket(`ws://localhost:3000/${payload}`);
+        state.webSocket.addEventListener('message', (response) => {
+          const support = JSON.parse(response.data);
+          if (!state.displaySupport) state.clientHasNewMsg = true;
+          if (support.ticketId && !state.supportTicketId) {
+            state.supportTicketId = support.ticketId;
+          } else if (support.supportId && state.supportTicketId) {
+            if (!state.supportId) state.supportId = support.ticketId;
+            if (
+              support.ticketId === state.supportId ||
+              support.ticketId.slice(-7) === 'support' ||
+              state.supportId.slice(-7) === 'support'
+            )
+              state.supportChat = [...state.supportChat, support];
+          } else {
+            state.supportChat = [...state.supportChat, support];
+          }
+        });
+        state.webSocket.addEventListener('close', () => {
+          state.webSocket.close();
+          state.webSocket = null;
+          state.supportChat = [];
+          state.supportTicketId = null;
+          state.supportId = null;
+          state.displaySupport = false;
+        });
+      }
+    },
+    setSupportId(state, payload) {
+      state.supportId = payload;
+    },
+    sendSupportTicket(state, payload) {
+      state.webSocket.send(
+        JSON.stringify({
+          msg: payload.msg,
+          client: payload.client,
+          ticketId: state.supportTicketId,
+          supportId: state.supportId,
+        })
+      );
+    },
+    setSupportList(state, payload) {
+      state.supportList = payload;
+    },
+    setInitChat(state, payload) {
+      state.supportChat = payload;
+    },
+    setIsLoadingSupportUpdate(state) {
+      state.isLoadingSupportUpdate = !state.isLoadingSupportUpdate;
+    },
+    setClientHasNewMsg(state) {
+      state.clientHasNewMsg = false;
+    },
   },
   actions: {
     getProducts(state, payload) {
@@ -246,6 +316,41 @@ export default createStore({
           })
           .catch((err) => state.commit('setError', err.message));
       }
+    },
+    getSupportList(state) {
+      state.commit('setIsLoadingSupportUpdate');
+      fetch(`${BASE_URL}/supportlist`, {
+        method: 'GET',
+      })
+        .then((res) => res.json())
+        .then((res) => {
+          state.commit('setSupportList', res);
+          state.commit('setIsLoadingSupportUpdate');
+        })
+        .catch((err) => state.commit('setError', err.message));
+    },
+    getSupportChat(state, payload) {
+      fetch(`${BASE_URL}/supportchat`, {
+        method: 'POST',
+        body: JSON.stringify({ id: payload }),
+      })
+        .then((res) => res.json())
+        .then((res) => state.commit('setInitChat', res))
+        .catch((err) => state.commit('setError', err.message));
+    },
+    removeSupportChat(state, payload) {
+      state.commit('setIsLoadingSupportUpdate');
+      fetch(`${BASE_URL}/removesupport`, {
+        method: 'POST',
+        body: JSON.stringify({ id: payload }),
+      })
+        .then(() => {
+          state.commit('setInitChat', []);
+          state.commit('setSupportId', '');
+          state.dispatch('getSupportList');
+          state.commit('setIsLoadingSupportUpdate');
+        })
+        .catch((err) => state.commit('setError', err.message));
     },
   },
   getters: {

@@ -8,6 +8,8 @@
       <CartOffcanvas />
       <FilterOffcanvas />
       <ProductModal />
+      <SupportBtn />
+      <SupportWindow />
     </body>
     <footer>
       <Footer />
@@ -21,6 +23,8 @@ import Footer from './components/Footer.vue';
 import CartOffcanvas from './components/CartOffcanvas.vue';
 import FilterOffcanvas from './components/FilterOffcanvas.vue';
 import ProductModal from './components/ProductModal.vue';
+import SupportBtn from './components/SupportBtn.vue';
+import SupportWindow from './components/SupportWindow.vue';
 
 export default {
   name: 'App',
@@ -30,6 +34,8 @@ export default {
     Footer,
     FilterOffcanvas,
     ProductModal,
+    SupportBtn,
+    SupportWindow,
   },
   mounted() {
     this.$store.dispatch('getFavourites');
