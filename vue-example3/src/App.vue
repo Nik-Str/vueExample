@@ -55,6 +55,7 @@ export default {
 .modal {
   z-index: 1045 !important;
 }
+
 .modal-backdrop {
   z-index: 1044 !important;
 }

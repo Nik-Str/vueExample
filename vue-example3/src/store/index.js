@@ -1,3 +1,4 @@
+import axios from 'axios';
 import { createStore } from 'vuex';
 const BASE_URL = 'http://localhost:3000';
 
@@ -7,7 +8,6 @@ export default createStore({
       data: [],
       isLoading: false,
       isError: null,
-      data: [],
       modal: {},
       modalSelectedSize: 'null',
       allSorts: ['Name A-Z', 'Name Z-A', 'Lowest price', 'Highest price'],
@@ -273,22 +273,17 @@ export default createStore({
   actions: {
     getProducts(state, payload) {
       state.commit('setLoading');
-      fetch(`${BASE_URL}/products/${payload}`, {
-        method: 'GET',
-      })
-        .then((res) => res.json())
-        .then((res) => state.commit('setData', res))
+      axios
+        .get(`${BASE_URL}/products/${payload}`)
+        .then((res) => state.commit('setData', res.data))
         .catch((err) => state.commit('setError', err.message));
     },
     getFavourites(state) {
       const storage = JSON.parse(localStorage.getItem('favourites'));
       if (storage) {
-        fetch(`${BASE_URL}/products`, {
-          method: 'POST',
-          body: JSON.stringify({ products: storage }),
-        })
-          .then((res) => res.json())
-          .then((res) => state.commit('setInitialFavourites', res))
+        axios
+          .post(`${BASE_URL}/products`, { products: storage })
+          .then((res) => state.commit('setInitialFavourites', res.data))
           .catch((err) => state.commit('setError', err.message));
       }
     },
@@ -296,15 +291,12 @@ export default createStore({
       const storage = JSON.parse(localStorage.getItem('cart'));
       if (storage) {
         const articles = storage.map((item) => item.article);
-        fetch(`${BASE_URL}/products`, {
-          method: 'POST',
-          body: JSON.stringify({ products: articles }),
-        })
-          .then((res) => res.json())
+        axios
+          .post(`${BASE_URL}/products`, { products: articles })
           .then((res) => {
             let cart = [];
             for (let i = 0; i < storage.length; i++) {
-              const item = res.filter((item) => item.article_nr === storage[i].article);
+              const item = res.data.filter((item) => item.article_nr === storage[i].article);
               cart.push({
                 ...item[0],
                 amount: storage[i].amount,
@@ -319,31 +311,24 @@ export default createStore({
     },
     getSupportList(state) {
       state.commit('setIsLoadingSupportUpdate');
-      fetch(`${BASE_URL}/supportlist`, {
-        method: 'GET',
-      })
-        .then((res) => res.json())
+      axios
+        .get(`${BASE_URL}/supportlist`)
         .then((res) => {
-          state.commit('setSupportList', res);
+          state.commit('setSupportList', res.data);
           state.commit('setIsLoadingSupportUpdate');
         })
         .catch((err) => state.commit('setError', err.message));
     },
     getSupportChat(state, payload) {
-      fetch(`${BASE_URL}/supportchat`, {
-        method: 'POST',
-        body: JSON.stringify({ id: payload }),
-      })
-        .then((res) => res.json())
-        .then((res) => state.commit('setInitChat', res))
+      axios
+        .post(`${BASE_URL}/supportchat`, JSON.stringify({ id: payload }))
+        .then((res) => state.commit('setInitChat', res.data))
         .catch((err) => state.commit('setError', err.message));
     },
     removeSupportChat(state, payload) {
       state.commit('setIsLoadingSupportUpdate');
-      fetch(`${BASE_URL}/removesupport`, {
-        method: 'POST',
-        body: JSON.stringify({ id: payload }),
-      })
+      axios
+        .post(`${BASE_URL}/removesupport`, JSON.stringify({ id: payload }))
         .then(() => {
           state.commit('setInitChat', []);
           state.commit('setSupportId', '');
