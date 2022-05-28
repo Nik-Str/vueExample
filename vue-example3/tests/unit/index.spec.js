@@ -1,3 +1,4 @@
+//npm run test:unit
 import Store from '../../src/store';
 import axios from 'axios';
 const BASE_URL = 'http://localhost:3000';
@@ -159,5 +160,3 @@ describe('test cart mechanism', () => {
     expect(store.state.cart.length).toBe(2);
   });
 });
-
-//npm run test:unit

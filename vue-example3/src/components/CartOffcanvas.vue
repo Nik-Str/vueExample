@@ -5,7 +5,7 @@
       <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
     </div>
     <div class="offcanvas-body d-flex flex-column justify-content-between">
-      <div>
+      <div class="testClassContainer">
         <div
           v-for="(item, index) in $store.state.cart"
           :key="index + item.title"
@@ -21,7 +21,7 @@
               data-bs-target="#productModal"
             />
           </div>
-          <div class="w-100">
+          <div class="w-100 testClassText">
             <p>{{ item.title }}</p>
             <p class="text-secondary">{{ item.selectedSize.toUpperCase() }}</p>
             <div class="d-flex justify-content-between">
