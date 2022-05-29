@@ -23,6 +23,7 @@
           type="checkbox"
           :id="index + item"
           @change="$store.commit('filterByCategory', item)"
+          :checked="$store.state.selectedCategory.some((selected) => selected === item)"
         />
         <label class="form-check-label" :for="index + item">{{ item }}</label>
       </div>
@@ -34,6 +35,7 @@
           type="checkbox"
           :id="index + item"
           @change="$store.commit('filterByBrand', item)"
+          :checked="$store.state.selectedBrand.some((selected) => selected === item)"
         />
         <label class="form-check-label" :for="index + item">{{ item }}</label>
       </div>
@@ -45,6 +47,7 @@
           type="checkbox"
           :id="index + item"
           @change="$store.commit('filterBySize', item)"
+          :checked="$store.state.selectedSize.some((selected) => selected === item)"
         />
         <label class="form-check-label" :for="index + item">{{ item.toUpperCase() }}</label>
       </div>

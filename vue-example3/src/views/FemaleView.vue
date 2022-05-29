@@ -28,6 +28,7 @@ export default {
   },
   mounted() {
     this.$store.dispatch('getProducts', 'female');
+    this.$store.commit('resetFilters');
   },
 };
 </script>

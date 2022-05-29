@@ -269,6 +269,12 @@ export default createStore({
     setClientHasNewMsg(state) {
       state.clientHasNewMsg = false;
     },
+    resetFilters(state) {
+      state.selectedCategory = [];
+      state.selectedBrand = [];
+      state.selectedSize = [];
+      state.selectedColor = [];
+    },
   },
   actions: {
     getProducts(state, payload) {

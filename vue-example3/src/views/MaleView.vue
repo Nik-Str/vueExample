@@ -26,6 +26,7 @@ export default {
     ...mapGetters(['getDisplayedProducts']),
   },
   mounted() {
+    this.$store.commit('resetFilters');
     this.$store.dispatch('getProducts', 'male');
   },
 };
