@@ -57,6 +57,7 @@ describe('test cart mechanism', () => {
     cy.get('.modal-header').find('.btn-close').click();
 
     //Remove item from cart
+    cy.get('.navbar-toggler').click();
     cy.get('.navbar').find('i').eq(1).click();
     cy.get('#offcanvasRight').should('be.visible');
     cy.get('#offcanvasRight').find('h4').should('have.text', 'Cart');
